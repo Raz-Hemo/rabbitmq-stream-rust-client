@@ -78,7 +78,7 @@ mod environment;
 pub mod error;
 mod offset_specification;
 mod producer;
-mod stream_creator;
+pub mod stream_creator;
 
 pub type RabbitMQStreamResult<T> = Result<T, error::ClientError>;
 

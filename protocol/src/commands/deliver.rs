@@ -16,15 +16,15 @@ use fake::Fake;
 #[derive(PartialEq, Debug, Clone)]
 pub struct DeliverCommand {
     pub subscription_id: u8,
-    magic_version: i8,
-    chunk_type: u8,
-    num_entries: u16,
-    timestamp: u64,
-    epoch: u64,
-    chunk_first_offset: u64,
-    chunk_crc: i32,
-    trailer_length: u32,
-    reserved: u32,
+    pub magic_version: i8,
+    pub chunk_type: u8,
+    pub num_entries: u16,
+    pub timestamp: u64,
+    pub epoch: u64,
+    pub chunk_first_offset: u64,
+    pub chunk_crc: i32,
+    pub trailer_length: u32,
+    pub reserved: u32,
     pub messages: Vec<Message>,
 }
 

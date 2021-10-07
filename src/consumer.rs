@@ -20,7 +20,7 @@ use tracing::trace;
 use crate::{
     client::{MessageHandler, MessageResult},
     error::{ConsumerCloseError, ConsumerCreateError, ConsumerDeliveryError},
-    Client, Environment,
+    Client, Environment, RabbitMQStreamResult,
 };
 use futures::{task::AtomicWaker, Stream};
 
@@ -49,6 +49,7 @@ impl ConsumerInternal {
 pub struct ConsumerBuilder {
     pub(crate) environment: Environment,
     pub(crate) offset_specification: OffsetSpecification,
+    pub(crate) credit: u16,
 }
 
 impl ConsumerBuilder {
@@ -61,7 +62,7 @@ impl ConsumerBuilder {
                 subscription_id,
                 stream,
                 self.offset_specification,
-                1,
+                self.credit,
                 HashMap::new(),
             )
             .await?;
@@ -96,6 +97,11 @@ impl ConsumerBuilder {
         self.offset_specification = offset_specification;
         self
     }
+
+    pub fn credit(mut self, credit: u16) -> Self {
+        self.credit = credit;
+        self
+    }
 }
 
 impl Consumer {
@@ -107,6 +113,13 @@ impl Consumer {
     /// Check if the consumer is closed
     pub fn is_closed(&self) -> bool {
         self.internal.is_closed()
+    }
+
+    pub async fn credit(&self, credits: u16) -> RabbitMQStreamResult<()> {
+        self.internal
+            .client
+            .credit(self.internal.subscription_id, credits)
+            .await
     }
 }
 

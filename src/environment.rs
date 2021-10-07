@@ -44,6 +44,7 @@ impl Environment {
         ConsumerBuilder {
             environment: self.clone(),
             offset_specification: OffsetSpecification::Next,
+            credit: 1
         }
     }
     pub(crate) async fn create_client(&self) -> RabbitMQStreamResult<Client> {
