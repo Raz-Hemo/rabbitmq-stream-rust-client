@@ -172,19 +172,16 @@ impl MessageHandler for ConsumerMessageHandler {
         match item {
             Some(Ok(response)) => {
                 if let ResponseKind::Deliver(delivery) = response.kind() {
-                    for message in delivery.messages {
-                        let _ = self
-                            .0
-                            .sender
-                            .send(Ok(Delivery {
-                                subscription_id: self.0.subscription_id,
-                                message,
-                            }))
-                            .await;
-                    }
+                    let _ = self
+                        .0
+                        .sender
+                        .send(Ok(Delivery {
+                            subscription_id: self.0.subscription_id,
+                            messages: delivery.messages,
+                            stream_offset: delivery.chunk_first_offset,
+                        }))
+                        .await;
                 }
-                // TODO handle credit fail
-                let _ = self.0.client.credit(self.0.subscription_id, 1).await;
             }
             Some(Err(err)) => {
                 let _ = self.0.sender.send(Err(err.into())).await;
@@ -201,5 +198,6 @@ impl MessageHandler for ConsumerMessageHandler {
 #[derive(Debug)]
 pub struct Delivery {
     pub subscription_id: u8,
-    pub message: Message,
+    pub messages: Vec<Message>,
+    pub stream_offset: u64,
 }
