@@ -71,7 +71,7 @@ pub enum ProducerCreateError {
 
     #[error("Stream {stream} does not exist")]
     StreamDoesNotExist { stream: String },
-    
+
     #[error(transparent)]
     Client(#[from] ClientError),
 }
@@ -114,7 +114,7 @@ pub enum ConsumerCreateError {
     StreamDoesNotExist { stream: String },
 
     #[error("Stream {stream} has no readers")]
-    StreamHasNoReaders { stream: String},
+    StreamHasNoReaders { stream: String },
 
     #[error(transparent)]
     Client(#[from] ClientError),

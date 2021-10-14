@@ -61,12 +61,18 @@ impl ConsumerBuilder {
         let mut client = self.environment.create_client().await?;
         if let Some(metadata) = client.metadata(vec![stream.to_string()]).await?.get(stream) {
             if let Some(replica) = metadata.replicas.choose(&mut rand::thread_rng()) {
-                tracing::debug!("Picked replica {:?} out of possible candidates {:?} for stream {}", replica, metadata.replicas, stream);
+                tracing::debug!(
+                    "Picked replica {:?} out of possible candidates {:?} for stream {}",
+                    replica,
+                    metadata.replicas,
+                    stream
+                );
                 client = Client::connect(ClientOptions {
                     host: replica.host.clone(),
                     port: replica.port as u16,
                     ..self.environment.options.client_options
-                }).await?;
+                })
+                .await?;
             } else {
                 return Err(ConsumerCreateError::StreamHasNoReaders {
                     stream: stream.into(),
