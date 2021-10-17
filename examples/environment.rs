@@ -49,13 +49,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     for _ in 0..message_count {
         let delivery = consumer.next().await.unwrap()?;
-        info!(
-            "Got message : {:?}",
-            delivery
-                .message
-                .data()
-                .map(|data| String::from_utf8(data.to_vec()))
-        );
+        for message in delivery.messages.iter() {
+            info!(
+                "Got message : {:?}",
+                message.data().map(|data| String::from_utf8(data.to_vec()))
+            );
+        }
     }
 
     consumer.handle().close().await.unwrap();

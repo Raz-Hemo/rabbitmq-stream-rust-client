@@ -28,7 +28,7 @@ async fn producer_send_no_name_ok() {
 
     let delivery = consumer.next().await.unwrap().unwrap();
     assert_eq!(1, delivery.subscription_id);
-    assert_eq!(Some(b"message".as_ref()), delivery.message.data());
+    assert_eq!(Some(b"message".as_ref()), delivery.messages[0].data());
 
     consumer.handle().close().await.unwrap();
 }
@@ -78,11 +78,11 @@ async fn producer_send_name_with_deduplication_ok() {
 
     let delivery = consumer.next().await.unwrap().unwrap();
     assert_eq!(1, delivery.subscription_id);
-    assert_eq!(Some(b"message0".as_ref()), delivery.message.data());
+    assert_eq!(Some(b"message0".as_ref()), delivery.messages[0].data());
 
     let delivery = consumer.next().await.unwrap().unwrap();
     assert_eq!(1, delivery.subscription_id);
-    assert_eq!(Some(b"message1".as_ref()), delivery.message.data());
+    assert_eq!(Some(b"message1".as_ref()), delivery.messages[1].data());
 
     consumer.handle().close().await.unwrap();
 }

@@ -37,10 +37,17 @@ async fn consumer_test() {
             .unwrap();
     }
 
-    for _ in 0..message_count {
-        let delivery = consumer.next().await.unwrap();
-        let data = String::from_utf8(delivery.unwrap().message.data().unwrap().to_vec()).unwrap();
-        assert!(data.contains("message"));
+    let mut i = 0;
+    while let Ok(delivery) = consumer.next().await.unwrap() {
+        for message in delivery.messages {
+            let data = String::from_utf8(message.data().unwrap().to_vec()).unwrap();
+            assert!(data.contains("message"));
+            i += 1;
+        }
+
+        if i >= message_count {
+            break;
+        }
     }
 
     consumer.handle().close().await.unwrap();
